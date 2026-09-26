@@ -1,0 +1,19 @@
+@page "/account"
+@attribute [Authorize]
+@using System.Security.Claims
+
+<PageTitle>Account Settings - OMS</PageTitle>
+
+<h1>Account Settings</h1>
+<p class="text-muted">Placeholder profile page reachable from the user dropdown in the top bar.</p>
+
+<AuthorizeView>
+    <Authorized>
+        <dl class="row" style="max-width: 480px;">
+            <dt class="col-sm-4">Display name</dt>
+            <dd class="col-sm-8">@context.User.Identity?.Name</dd>
+            <dt class="col-sm-4">Role</dt>
+            <dd class="col-sm-8">@context.User.FindFirst(ClaimTypes.Role)?.Value</dd>
+        </dl>
+    </Authorized>
+</AuthorizeView>

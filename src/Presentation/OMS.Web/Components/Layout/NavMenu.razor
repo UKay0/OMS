@@ -1,0 +1,37 @@
+@* Left sidebar nav. Every entry is guarded by AuthorizeView so a user only ever sees
+   links to pages they can actually open; the Admin-only "User Management" link is the
+   template for how a future admin-only page gets added to the menu. *@
+<div class="sidebar-nav">
+    <nav class="nav flex-column">
+        <AuthorizeView>
+            <Authorized>
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    Home
+                </NavLink>
+                <NavLink class="nav-link" href="employees">
+                    Employees
+                </NavLink>
+                <NavLink class="nav-link" href="departments">
+                    Departments
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <div class="nav-section-title">Admin</div>
+                <NavLink class="nav-link" href="admin/users">
+                    User Management
+                </NavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView>
+            <NotAuthorized>
+                <NavLink class="nav-link" href="welcome">
+                    Welcome
+                </NavLink>
+            </NotAuthorized>
+        </AuthorizeView>
+    </nav>
+</div>

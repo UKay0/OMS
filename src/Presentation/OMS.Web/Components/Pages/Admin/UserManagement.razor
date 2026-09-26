@@ -1,0 +1,51 @@
+@page "/admin/users"
+@attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
+@using OMS.Application.Interfaces
+@inject IUserService UserService
+
+@* Proves role-gated page access beyond plain [Authorize]: only Admin can reach this
+   route (server-enforced by the attribute; NavMenu also hides the link from non-admins). *@
+
+<PageTitle>User Management - OMS</PageTitle>
+
+<h1>User Management</h1>
+<p class="text-muted">Admin-only page. Non-admin users cannot navigate here even with a direct link.</p>
+
+@if (users is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table table-striped table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Display Name</th>
+                <th>Role</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td>@user.Username</td>
+                    <td>@user.DisplayName</td>
+                    <td><span class="badge text-bg-secondary">@user.Role</span></td>
+                    <td>@(user.IsActive ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IReadOnlyList<OMS.Application.Dtos.UserDto>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = await UserService.GetAllAsync();
+    }
+}

@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/Core/">
+    <Project Path="src/Core/OMS.Domain/OMS.Domain.csproj" />
+    <Project Path="src/Core/OMS.Application/OMS.Application.csproj" />
+    <Project Path="src/Core/OMS.Infrastructure/OMS.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="src/Presentation/OMS.Web/OMS.Web.csproj" />
+  </Folder>
+</Solution>

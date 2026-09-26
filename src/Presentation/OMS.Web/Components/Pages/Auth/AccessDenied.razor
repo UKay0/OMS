@@ -1,0 +1,11 @@
+@page "/access-denied"
+@attribute [Authorize]
+
+@* Cookie auth's options.AccessDeniedPath (Program.cs) points here: reached when a
+   signed-in user hits an [Authorize(Roles = "...")] page they don't have the role for. *@
+
+<PageTitle>Access Denied - OMS</PageTitle>
+
+<h1>Access Denied</h1>
+<p class="text-muted">You don't have permission to view that page.</p>
+<a class="btn btn-primary" href="/">Back to Home</a>

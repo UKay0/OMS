@@ -1,0 +1,28 @@
+@page "/"
+@attribute [Authorize]
+
+<PageTitle>Home - OMS</PageTitle>
+
+<h1>Welcome back!</h1>
+<p class="text-muted">This is the authenticated landing page. Use the left nav to reach Employees, Departments, or (if you're an Admin) User Management.</p>
+
+<div class="row g-3 mt-2">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Employees</h5>
+                <p class="card-text">Add/edit via a modal dialog.</p>
+                <a class="btn btn-outline-primary btn-sm" href="employees">Open</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Departments</h5>
+                <p class="card-text">Add/edit via a dedicated page.</p>
+                <a class="btn btn-outline-primary btn-sm" href="departments">Open</a>
+            </div>
+        </div>
+    </div>
+</div>

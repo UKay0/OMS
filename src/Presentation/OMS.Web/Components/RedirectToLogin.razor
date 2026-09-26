@@ -1,0 +1,11 @@
+@* Used by Routes.razor's <NotAuthorized> so any [Authorize] page bounces an anonymous
+   visitor to /login instead of rendering an "access denied" wall. *@
+@inject NavigationManager Navigation
+
+@code {
+    protected override void OnInitialized()
+    {
+        var returnUrl = Uri.EscapeDataString(new Uri(Navigation.Uri).PathAndQuery);
+        Navigation.NavigateTo($"/login?returnUrl={returnUrl}", forceLoad: true);
+    }
+}

@@ -1,0 +1,99 @@
+@page "/departments/edit"
+@page "/departments/edit/{Id:int}"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using OMS.Application.Dtos
+@using OMS.Application.Interfaces
+@inject IDepartmentService DepartmentService
+@inject NavigationManager Navigation
+
+<PageTitle>@(Id is null ? "Add" : "Edit") Department - OMS</PageTitle>
+
+<h1>@(Id is null ? "Add Department" : "Edit Department")</h1>
+
+@if (_notFound)
+{
+    <div class="alert alert-warning">Department not found.</div>
+}
+else
+{
+    <EditForm Model="_model" OnValidSubmit="HandleSaveAsync" class="col-md-6">
+        <DataAnnotationsValidator />
+
+        @if (_errorMessage is not null)
+        {
+            <div class="alert alert-danger py-2">@_errorMessage</div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <InputText class="form-control" @bind-Value="_model.Name" />
+            <ValidationMessage For="() => _model.Name" />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Code</label>
+            <InputText class="form-control" @bind-Value="_model.Code" />
+            <ValidationMessage For="() => _model.Code" />
+        </div>
+        <div class="form-check mb-3">
+            <InputCheckbox class="form-check-input" @bind-Value="_model.IsActive" id="deptActive" />
+            <label class="form-check-label" for="deptActive">Active</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a class="btn btn-secondary" href="departments">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int? Id { get; set; }
+
+    private DepartmentFormModel _model = new();
+    private string? _errorMessage;
+    private bool _notFound;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id is null)
+        {
+            _model = new DepartmentFormModel();
+            return;
+        }
+
+        var dto = await DepartmentService.GetByIdAsync(Id.Value);
+        if (dto is null)
+        {
+            _notFound = true;
+            return;
+        }
+
+        _model = new DepartmentFormModel
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Code = dto.Code,
+            IsActive = dto.IsActive
+        };
+    }
+
+    private async Task HandleSaveAsync()
+    {
+        try
+        {
+            if (Id is null)
+            {
+                await DepartmentService.CreateAsync(_model);
+            }
+            else
+            {
+                await DepartmentService.UpdateAsync(Id.Value, _model);
+            }
+
+            Navigation.NavigateTo("departments");
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+}

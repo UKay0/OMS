@@ -1,0 +1,51 @@
+@* Top navbar for authenticated pages: app icon/name far left, user avatar circle +
+   dropdown (Account Settings / Logout) far right, per the required nav layout. *@
+<nav class="navbar navbar-dark bg-dark topbar px-3">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+        <span class="app-icon">OM</span>
+        <span>OMS</span>
+    </a>
+
+    <div class="dropdown ms-auto">
+        <button class="btn btn-dark dropdown-toggle d-flex align-items-center gap-2" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="user-avatar">@Initials</span>
+            <span class="d-none d-sm-inline">@DisplayName</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li><h6 class="dropdown-header">@DisplayName (@Role)</h6></li>
+            <li><a class="dropdown-item" href="/account">Account Settings</a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+                <form method="post" action="/logout">
+                    <AntiforgeryToken />
+                    <button type="submit" class="dropdown-item">Logout</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+@code {
+    [CascadingParameter] private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    private string DisplayName { get; set; } = string.Empty;
+    private string Role { get; set; } = string.Empty;
+    private string Initials => string.IsNullOrWhiteSpace(DisplayName)
+        ? "?"
+        : string.Concat(DisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(p => char.ToUpperInvariant(p[0])));
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthStateTask is null)
+        {
+            return;
+        }
+
+        var state = await AuthStateTask;
+        DisplayName = state.User.Identity?.Name ?? "User";
+        Role = state.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? string.Empty;
+    }
+}

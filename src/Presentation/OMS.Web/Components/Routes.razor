@@ -1,0 +1,13 @@
+@* AuthorizeRouteView (instead of plain RouteView) is what makes every page's
+   [Authorize]/[AllowAnonymous] attribute actually enforced; NotAuthorized redirects
+   an unauthenticated visitor to /login instead of showing a blank/denied page. *@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+        </AuthorizeRouteView>
+        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+    </Found>
+</Router>

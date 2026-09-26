@@ -1,0 +1,105 @@
+@page "/departments/merge"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@using OMS.Application.Dtos
+@using OMS.Application.Interfaces
+@inject IDepartmentService DepartmentService
+@inject IDepartmentMergeService MergeService
+@inject NavigationManager Navigation
+
+@* Reference implementation for a multi-step write that needs an explicit transaction:
+   moving every employee out of the source department and deleting it either both
+   commit or neither does. The "simulate failure" checkbox lets you actually watch the
+   rollback undo the employee moves - toggle it on, merge, then check /employees: the
+   moved employees are back in their original department because nothing committed. *@
+
+<PageTitle>Merge Departments - OMS</PageTitle>
+
+<h1>Merge Departments</h1>
+<p class="text-muted">Moves every employee from the source department into the target department, then deletes the source department. Both steps happen in a single database transaction.</p>
+
+@if (departments is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @if (_errorMessage is not null)
+    {
+        <div class="alert alert-danger">
+            <strong>Merge failed and was rolled back:</strong> @_errorMessage
+        </div>
+    }
+    @if (_successMessage is not null)
+    {
+        <div class="alert alert-success">@_successMessage</div>
+    }
+
+    <EditForm Model="_model" OnValidSubmit="HandleMergeAsync" class="col-md-6">
+        <DataAnnotationsValidator />
+
+        <div class="mb-3">
+            <label class="form-label">Source department (will be deleted)</label>
+            <InputSelect class="form-select" @bind-Value="_model.SourceDepartmentId">
+                <option value="">-- Select --</option>
+                @foreach (var department in departments)
+                {
+                    <option value="@department.Id">@department.Name (@department.Code)</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => _model.SourceDepartmentId" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Target department (receives the employees)</label>
+            <InputSelect class="form-select" @bind-Value="_model.TargetDepartmentId">
+                <option value="">-- Select --</option>
+                @foreach (var department in departments)
+                {
+                    <option value="@department.Id">@department.Name (@department.Code)</option>
+                }
+            </InputSelect>
+            <ValidationMessage For="() => _model.TargetDepartmentId" />
+        </div>
+
+        <div class="form-check mb-3">
+            <InputCheckbox class="form-check-input" @bind-Value="_model.SimulateFailure" id="simulateFailure" />
+            <label class="form-check-label" for="simulateFailure">
+                Simulate a failure after moving employees, before deleting the source (demonstrates rollback)
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Merge</button>
+        <a class="btn btn-secondary" href="departments">Cancel</a>
+    </EditForm>
+}
+
+@code {
+    private IReadOnlyList<DepartmentDto>? departments;
+    private MergeDepartmentsFormModel _model = new();
+    private string? _errorMessage;
+    private string? _successMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        departments = await DepartmentService.GetAllAsync();
+    }
+
+    private async Task HandleMergeAsync()
+    {
+        _errorMessage = null;
+        _successMessage = null;
+
+        try
+        {
+            await MergeService.MergeAsync(_model);
+            _successMessage = "Departments merged successfully.";
+            departments = await DepartmentService.GetAllAsync();
+            _model = new MergeDepartmentsFormModel();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+    }
+}

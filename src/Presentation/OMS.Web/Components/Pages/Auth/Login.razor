@@ -1,0 +1,93 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@layout OMS.Web.Components.Layout.EmptyLayout
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using OMS.Application.Interfaces
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+@* This page has no @rendermode, so it renders as static SSR (not Interactive Server).
+   That matters: only a static-SSR request has the real HttpContext needed to write the
+   auth cookie via HttpContext.SignInAsync - an interactive Blazor Server circuit does not. *@
+
+<PageTitle>Login - OMS</PageTitle>
+
+<div class="card shadow-sm" style="width: 380px;">
+    <div class="card-body p-4">
+        <h1 class="h4 mb-1">Sign in</h1>
+        <p class="text-muted small mb-3">OMS Template</p>
+
+        @if (errorMessage is not null)
+        {
+            <div class="alert alert-danger py-2">@errorMessage</div>
+        }
+
+        <EditForm Model="Input" FormName="login" method="post" OnValidSubmit="HandleLoginAsync">
+            <DataAnnotationsValidator />
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <InputText class="form-control" @bind-Value="Input.Username" autofocus />
+                <ValidationMessage For="() => Input.Username" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <InputText type="password" class="form-control" @bind-Value="Input.Password" />
+                <ValidationMessage For="() => Input.Password" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Sign in</button>
+        </EditForm>
+
+        <hr />
+        <p class="small text-muted mb-0">
+            Seeded accounts: <code>admin / Admin@@123</code> (Admin role), <code>user / User@@123</code> (User role)
+        </p>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private LoginFormModel Input { get; set; } = new();
+
+    [SupplyParameterFromQuery]
+    private string? ReturnUrl { get; set; }
+
+    [CascadingParameter]
+    private HttpContext HttpContext { get; set; } = default!;
+
+    private string? errorMessage;
+
+    private async Task HandleLoginAsync()
+    {
+        var user = await AuthService.ValidateCredentialsAsync(Input.Username, Input.Password);
+        if (user is null)
+        {
+            errorMessage = "Invalid username or password.";
+            return;
+        }
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.DisplayName),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new(ClaimTypes.Role, user.Role)
+        };
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity));
+
+        Navigation.NavigateTo(string.IsNullOrEmpty(ReturnUrl) ? "/" : ReturnUrl, forceLoad: true);
+    }
+
+    private class LoginFormModel
+    {
+        [Required]
+        public string Username { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+}
