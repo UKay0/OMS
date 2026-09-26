@@ -3,10 +3,8 @@ using System.Security.Cryptography;
 namespace OMS.Infrastructure.Security;
 
 /// <summary>
-/// Minimal PBKDF2 password hasher. Hand-rolled instead of pulling in the full
-/// Microsoft.AspNetCore.Identity package (which brings a much bigger dependency
-/// surface than a template needs just for hashing) — this is the "how" behind
-/// the User.PasswordHash column that seeding and login both use.
+/// PBKDF2 password hasher used for every User.PasswordHash value, instead of pulling
+/// in the full Microsoft.AspNetCore.Identity package just for hashing.
 /// Format: {iterations}.{base64 salt}.{base64 hash}
 /// </summary>
 public static class PasswordHasher

@@ -1,17 +1,20 @@
-@* Reusable Bootstrap modal + EditForm for adding/editing an Employee. This is the
-   template for the "edit via modal" CRUD pattern: EmployeeList opens it for both
-   Add and Edit, and it hands the saved id back via OnSaved. *@
+@* Reusable modal for adding/editing an Employee. EmployeeList opens it for both
+   Add and Edit, and it refreshes the list via OnSaved once a save succeeds. *@
 @using OMS.Application.Dtos
 @using OMS.Application.Interfaces
 @inject IEmployeeService EmployeeService
+@inject IDepartmentService DepartmentService
 
 <div class="modal fade @(_isOpen ? "show d-block" : "")" tabindex="-1" style="@(_isOpen ? "background-color: rgba(0,0,0,.5)" : "")">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
                 <DataAnnotationsValidator />
                 <div class="modal-header">
-                    <h5 class="modal-title">@(_model.Id == 0 ? "Add Employee" : "Edit Employee")</h5>
+                    <h5 class="modal-title">
+                        <i class="bi @(_model.Id == 0 ? "bi-person-plus-fill" : "bi-pencil-square") me-2 text-primary"></i>
+                        @(_model.Id == 0 ? "Add Employee" : "Edit Employee")
+                    </h5>
                     <button type="button" class="btn-close" @onclick="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -31,7 +34,13 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Department</label>
-                        <InputText class="form-control" @bind-Value="_model.Department" />
+                        <InputSelect class="form-select" @bind-Value="_model.Department">
+                            <option value="">-- Select --</option>
+                            @foreach (var department in _departments)
+                            {
+                                <option value="@department.Name">@department.Name (@department.Code)</option>
+                            }
+                        </InputSelect>
                         <ValidationMessage For="() => _model.Department" />
                     </div>
                     <div class="mb-3">
@@ -46,7 +55,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="Close">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i>Save</button>
                 </div>
             </EditForm>
         </div>
@@ -57,23 +66,27 @@
     private bool _isOpen;
     private EmployeeFormModel _model = new();
     private string? _errorMessage;
+    private IReadOnlyList<DepartmentDto> _departments = [];
 
     [Parameter] public EventCallback OnSaved { get; set; }
 
-    public void OpenForAdd()
+    public async Task OpenForAddAsync()
     {
+        await RefreshDepartmentsAsync();
         _model = new EmployeeFormModel();
         _errorMessage = null;
         _isOpen = true;
-        // OpenForAdd/OpenForEdit/Close are invoked directly on this component instance via
-        // @ref from EmployeeList's own @onclick, not through a parameter or EventCallback -
-        // Blazor only auto-rerenders the component whose event fired (EmployeeList), so this
-        // component needs an explicit StateHasChanged() to actually show/hide the modal.
+        // OpenForAddAsync/OpenForEditAsync/Close are invoked directly on this component
+        // instance via @ref from EmployeeList's own @onclick, not through a parameter or
+        // EventCallback - Blazor only auto-rerenders the component whose event fired
+        // (EmployeeList), so this component needs an explicit StateHasChanged() to
+        // actually show/hide the modal.
         StateHasChanged();
     }
 
-    public void OpenForEdit(EmployeeDto dto)
+    public async Task OpenForEditAsync(EmployeeDto dto)
     {
+        await RefreshDepartmentsAsync();
         _model = new EmployeeFormModel
         {
             Id = dto.Id,
@@ -87,6 +100,10 @@
         _isOpen = true;
         StateHasChanged();
     }
+
+    // Re-fetched on every open (rather than once in OnInitializedAsync) so a department
+    // added or renamed after the page loaded still shows up in the dropdown.
+    private async Task RefreshDepartmentsAsync() => _departments = await DepartmentService.GetAllAsync();
 
     private void Close()
     {

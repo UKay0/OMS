@@ -6,7 +6,7 @@ using OMS.Infrastructure.Persistence;
 
 namespace OMS.Infrastructure.Services;
 
-/// <summary>EF Core-backed implementation of IEmployeeService. Reference implementation for the "modal edit" CRUD pattern's data access.</summary>
+/// <summary>EF Core-backed implementation of IEmployeeService.</summary>
 public class EmployeeService(AppDbContext db) : IEmployeeService
 {
     public async Task<IReadOnlyList<EmployeeDto>> GetAllAsync(CancellationToken ct = default) =>

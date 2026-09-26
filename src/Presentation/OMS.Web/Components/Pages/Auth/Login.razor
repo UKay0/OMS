@@ -15,10 +15,13 @@
 
 <PageTitle>Login - OMS</PageTitle>
 
-<div class="card shadow-sm" style="width: 380px;">
+<div class="card shadow-lg" style="width: 380px;">
     <div class="card-body p-4">
-        <h1 class="h4 mb-1">Sign in</h1>
-        <p class="text-muted small mb-3">OMS Template</p>
+        <div class="text-center mb-3">
+            <span class="app-icon d-inline-flex mb-2"><i class="bi bi-kanban-fill"></i></span>
+            <h1 class="h4 mb-1">Sign in to OMS</h1>
+            <p class="text-muted small mb-0">Enter your credentials to continue</p>
+        </div>
 
         @if (errorMessage is not null)
         {
@@ -30,21 +33,24 @@
 
             <div class="mb-3">
                 <label class="form-label">Username</label>
-                <InputText class="form-control" @bind-Value="Input.Username" autofocus />
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
+                    <InputText class="form-control" @bind-Value="Input.Username" autofocus />
+                </div>
                 <ValidationMessage For="() => Input.Username" />
             </div>
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <InputText type="password" class="form-control" @bind-Value="Input.Password" />
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                    <InputText type="password" class="form-control" @bind-Value="Input.Password" />
+                </div>
                 <ValidationMessage For="() => Input.Password" />
             </div>
-            <button type="submit" class="btn btn-primary w-100">Sign in</button>
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-box-arrow-in-right"></i>Sign In
+            </button>
         </EditForm>
-
-        <hr />
-        <p class="small text-muted mb-0">
-            Seeded accounts: <code>admin / Admin@@123</code> (Admin role), <code>user / User@@123</code> (User role)
-        </p>
     </div>
 </div>
 

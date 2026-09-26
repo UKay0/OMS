@@ -1,7 +1,6 @@
-# OMS — .NET 10 Blazor Template
+# OMS
 
-A reference application establishing the architecture, auth model, navigation shell, and
-CRUD conventions that future OMS pages/features should follow.
+OMS is a Blazor application for managing an organization's employees and departments.
 
 ## Stack
 
@@ -35,23 +34,19 @@ dotnet run --project src/Presentation/OMS.Web
 ```
 
 On first run the app creates the `OmsDb` LocalDB database, applies EF Core migrations, and
-seeds two accounts:
+seeds an administrator account (`admin` / `Admin@123`) plus a standard user account
+(`user` / `User@123`).
 
-| Username | Password    | Role  |
-|----------|-------------|-------|
-| admin    | Admin@123   | Admin |
-| user     | User@123    | User  |
+## Features
 
-## What this template demonstrates
-
-- **`/welcome`** — the one page anyone can view without signing in.
-- **`/login`** — validates against the seeded `Users` table (not a code-level hardcoded bypass).
-- **`/employees`** — CRUD with **add/edit via a modal** (`EmployeeFormModal.razor`).
-- **`/departments`** — CRUD with **add/edit via a dedicated page** (`DepartmentEdit.razor`).
-- **`/admin/users`** — an `[Authorize(Roles = "Admin")]` page, hidden from non-admins in the
-  left nav and blocked server-side even via direct URL.
-- Top bar: app icon (far left), user avatar + dropdown for Account Settings/Logout (far right).
-- Left nav: filtered per signed-in user's role.
+- Public landing page, with everything else requiring sign-in.
+- Employee management with add/edit via a modal dialog.
+- Department management with add/edit via a dedicated page.
+- Department merge: moves every employee out of one department into another and
+  removes the original department, as a single database transaction.
+- Role-based access: an admin-only User Management page, hidden from and blocked for
+  non-admin users.
+- Top bar with account menu (Account Settings/Logout); left nav filtered by role.
 
 ## Adding a new feature
 

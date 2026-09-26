@@ -3,9 +3,9 @@ using OMS.Application.Dtos;
 namespace OMS.Application.Interfaces;
 
 /// <summary>
-/// Reference implementation of a multi-step write wrapped in an explicit database
-/// transaction: moving every employee out of one department and deleting it either
-/// both happen or neither does. Implemented in
+/// Merges one department into another: every employee in the source department is
+/// moved to the target department, then the source department is deleted. Both steps
+/// succeed or fail together. Implemented in
 /// OMS.Infrastructure/Services/DepartmentMergeService.cs, consumed by
 /// OMS.Web/Components/Pages/Departments/DepartmentMerge.razor.
 /// </summary>

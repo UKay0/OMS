@@ -3,9 +3,8 @@ using OMS.Domain.Common;
 namespace OMS.Domain.Entities;
 
 /// <summary>
-/// Sample feature entity #2. Demonstrates the "edit via dedicated page" CRUD pattern
-/// (see Web/Components/Pages/Departments/DepartmentEdit.razor), independent of the
-/// modal pattern used by Employee so both templates exist side by side.
+/// An organizational department that employees belong to. Added/edited via a
+/// dedicated page (see Web/Components/Pages/Departments/DepartmentEdit.razor).
 /// </summary>
 public class Department : BaseEntity
 {

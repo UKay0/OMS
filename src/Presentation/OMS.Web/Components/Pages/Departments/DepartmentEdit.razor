@@ -9,40 +9,47 @@
 
 <PageTitle>@(Id is null ? "Add" : "Edit") Department - OMS</PageTitle>
 
-<h1>@(Id is null ? "Add Department" : "Edit Department")</h1>
+<h1>
+    <i class="bi @(Id is null ? "bi-plus-circle-fill" : "bi-pencil-square") me-2 text-primary"></i>
+    @(Id is null ? "Add Department" : "Edit Department")
+</h1>
 
 @if (_notFound)
 {
-    <div class="alert alert-warning">Department not found.</div>
+    <div class="alert alert-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>Department not found.</div>
 }
 else
 {
-    <EditForm Model="_model" OnValidSubmit="HandleSaveAsync" class="col-md-6">
-        <DataAnnotationsValidator />
+    <div class="card shadow-sm col-md-6">
+        <div class="card-body">
+            <EditForm Model="_model" OnValidSubmit="HandleSaveAsync">
+                <DataAnnotationsValidator />
 
-        @if (_errorMessage is not null)
-        {
-            <div class="alert alert-danger py-2">@_errorMessage</div>
-        }
+                @if (_errorMessage is not null)
+                {
+                    <div class="alert alert-danger py-2">@_errorMessage</div>
+                }
 
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <InputText class="form-control" @bind-Value="_model.Name" />
-            <ValidationMessage For="() => _model.Name" />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Code</label>
-            <InputText class="form-control" @bind-Value="_model.Code" />
-            <ValidationMessage For="() => _model.Code" />
-        </div>
-        <div class="form-check mb-3">
-            <InputCheckbox class="form-check-input" @bind-Value="_model.IsActive" id="deptActive" />
-            <label class="form-check-label" for="deptActive">Active</label>
-        </div>
+                <div class="mb-3">
+                    <label class="form-label">Name</label>
+                    <InputText class="form-control" @bind-Value="_model.Name" />
+                    <ValidationMessage For="() => _model.Name" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Code</label>
+                    <InputText class="form-control" @bind-Value="_model.Code" />
+                    <ValidationMessage For="() => _model.Code" />
+                </div>
+                <div class="form-check mb-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="_model.IsActive" id="deptActive" />
+                    <label class="form-check-label" for="deptActive">Active</label>
+                </div>
 
-        <button type="submit" class="btn btn-primary">Save</button>
-        <a class="btn btn-secondary" href="departments">Cancel</a>
-    </EditForm>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i>Save</button>
+                <a class="btn btn-secondary" href="departments">Cancel</a>
+            </EditForm>
+        </div>
+    </div>
 }
 
 @code {

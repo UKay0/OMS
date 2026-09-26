@@ -7,10 +7,8 @@ namespace OMS.Infrastructure.Persistence;
 
 /// <summary>
 /// Runs once at startup (from Program.cs, after Database.Migrate()) to guarantee the
-/// app is usable on a brand-new database: an Admin login exists, and the two sample
-/// CRUD features have a few rows so the list pages aren't empty on first run.
-/// This is what satisfies "hardcoded credentials" without actually hardcoding a
-/// bypass in the login code path itself.
+/// app is usable on a brand-new database: an administrator login exists, and the
+/// Employees/Departments tables have starting data instead of showing up empty.
 /// </summary>
 public static class SeedData
 {
@@ -34,7 +32,7 @@ public static class SeedData
             {
                 Username = "user",
                 PasswordHash = PasswordHasher.Hash("User@123"),
-                DisplayName = "Sample User",
+                DisplayName = "Taylor Morgan",
                 Role = UserRole.User,
                 IsActive = true
             });

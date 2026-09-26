@@ -31,9 +31,9 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-// Apply any pending EF Core migrations and ensure the seed admin/user accounts and
-// sample rows exist, so a fresh clone works against a brand-new LocalDB with zero
-// manual setup (per the "auto migrations on startup" requirement).
+// Apply any pending EF Core migrations and ensure the starting accounts and data
+// exist, so a fresh deployment works against a brand-new LocalDB with zero manual
+// setup.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

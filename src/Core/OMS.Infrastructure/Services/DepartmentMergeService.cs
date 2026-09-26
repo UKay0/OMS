@@ -6,12 +6,12 @@ using OMS.Infrastructure.Persistence;
 namespace OMS.Infrastructure.Services;
 
 /// <summary>
-/// Reference implementation for wrapping several writes in one explicit database
-/// transaction. Every other service in this template (EmployeeService,
-/// DepartmentService, ...) relies on the implicit transaction SaveChangesAsync opens
-/// for its single call; this one needs an explicit transaction because it spans two
+/// Moves every employee out of one department into another and deletes the source
+/// department. EmployeeService/DepartmentService each rely on the implicit transaction
+/// a single SaveChangesAsync call opens; this operation spans two separate
 /// SaveChangesAsync-worthy steps (re-pointing employees, then deleting the source
-/// department) that must succeed or fail together.
+/// department) that must succeed or fail together, so it opens its own explicit
+/// database transaction around both.
 /// </summary>
 public class DepartmentMergeService(AppDbContext db) : IDepartmentMergeService
 {
@@ -52,15 +52,6 @@ public class DepartmentMergeService(AppDbContext db) : IDepartmentMergeService
 
             await db.SaveChangesAsync(ct);
 
-            if (model.SimulateFailure)
-            {
-                // Thrown on purpose (wired to a checkbox in the UI) so the rollback below
-                // actually runs: proves the employee moves just saved above get undone
-                // along with the delete, instead of the merge landing half-applied.
-                throw new InvalidOperationException(
-                    "Simulated failure after moving employees but before deleting the source department.");
-            }
-
             db.Departments.Remove(source);
             await db.SaveChangesAsync(ct);
 
@@ -69,8 +60,7 @@ public class DepartmentMergeService(AppDbContext db) : IDepartmentMergeService
         catch
         {
             // Disposing an uncommitted IDbContextTransaction would roll back on its own,
-            // but doing it explicitly documents the intent for anyone reading this as the
-            // template for their own multi-step transaction.
+            // but rolling back explicitly here makes the intent clear.
             await transaction.RollbackAsync(ct);
 
             // AppDbContext is registered Scoped, and in this Blazor Server app that scope

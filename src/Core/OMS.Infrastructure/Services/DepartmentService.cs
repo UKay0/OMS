@@ -6,7 +6,7 @@ using OMS.Infrastructure.Persistence;
 
 namespace OMS.Infrastructure.Services;
 
-/// <summary>EF Core-backed implementation of IDepartmentService. Reference implementation for the "dedicated page edit" CRUD pattern's data access.</summary>
+/// <summary>EF Core-backed implementation of IDepartmentService.</summary>
 public class DepartmentService(AppDbContext db) : IDepartmentService
 {
     public async Task<IReadOnlyList<DepartmentDto>> GetAllAsync(CancellationToken ct = default) =>

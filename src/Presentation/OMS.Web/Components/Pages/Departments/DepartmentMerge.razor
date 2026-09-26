@@ -7,16 +7,14 @@
 @inject IDepartmentMergeService MergeService
 @inject NavigationManager Navigation
 
-@* Reference implementation for a multi-step write that needs an explicit transaction:
-   moving every employee out of the source department and deleting it either both
-   commit or neither does. The "simulate failure" checkbox lets you actually watch the
-   rollback undo the employee moves - toggle it on, merge, then check /employees: the
-   moved employees are back in their original department because nothing committed. *@
+@* Moving every employee out of the source department and deleting it are two separate
+   writes that must both succeed or neither should - MergeAsync wraps them in a single
+   database transaction so a failure partway through leaves nothing changed. *@
 
 <PageTitle>Merge Departments - OMS</PageTitle>
 
-<h1>Merge Departments</h1>
-<p class="text-muted">Moves every employee from the source department into the target department, then deletes the source department. Both steps happen in a single database transaction.</p>
+<h1><i class="bi bi-arrow-left-right me-2 text-primary"></i>Merge Departments</h1>
+<p class="text-muted">Move every employee from one department into another, then remove the original department.</p>
 
 @if (departments is null)
 {
@@ -27,51 +25,48 @@ else
     @if (_errorMessage is not null)
     {
         <div class="alert alert-danger">
-            <strong>Merge failed and was rolled back:</strong> @_errorMessage
+            <i class="bi bi-exclamation-triangle-fill me-2"></i><strong>Merge failed:</strong> @_errorMessage
         </div>
     }
     @if (_successMessage is not null)
     {
-        <div class="alert alert-success">@_successMessage</div>
+        <div class="alert alert-success"><i class="bi bi-check-circle-fill me-2"></i>@_successMessage</div>
     }
 
-    <EditForm Model="_model" OnValidSubmit="HandleMergeAsync" class="col-md-6">
-        <DataAnnotationsValidator />
+    <div class="card shadow-sm col-md-6">
+        <div class="card-body">
+            <EditForm Model="_model" OnValidSubmit="HandleMergeAsync">
+                <DataAnnotationsValidator />
 
-        <div class="mb-3">
-            <label class="form-label">Source department (will be deleted)</label>
-            <InputSelect class="form-select" @bind-Value="_model.SourceDepartmentId">
-                <option value="">-- Select --</option>
-                @foreach (var department in departments)
-                {
-                    <option value="@department.Id">@department.Name (@department.Code)</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => _model.SourceDepartmentId" />
+                <div class="mb-3">
+                    <label class="form-label">Source department (will be deleted)</label>
+                    <InputSelect class="form-select" @bind-Value="_model.SourceDepartmentId">
+                        <option value="">-- Select --</option>
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Id">@department.Name (@department.Code)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.SourceDepartmentId" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Target department (receives the employees)</label>
+                    <InputSelect class="form-select" @bind-Value="_model.TargetDepartmentId">
+                        <option value="">-- Select --</option>
+                        @foreach (var department in departments)
+                        {
+                            <option value="@department.Id">@department.Name (@department.Code)</option>
+                        }
+                    </InputSelect>
+                    <ValidationMessage For="() => _model.TargetDepartmentId" />
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-left-right"></i>Merge</button>
+                <a class="btn btn-secondary" href="departments">Cancel</a>
+            </EditForm>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Target department (receives the employees)</label>
-            <InputSelect class="form-select" @bind-Value="_model.TargetDepartmentId">
-                <option value="">-- Select --</option>
-                @foreach (var department in departments)
-                {
-                    <option value="@department.Id">@department.Name (@department.Code)</option>
-                }
-            </InputSelect>
-            <ValidationMessage For="() => _model.TargetDepartmentId" />
-        </div>
-
-        <div class="form-check mb-3">
-            <InputCheckbox class="form-check-input" @bind-Value="_model.SimulateFailure" id="simulateFailure" />
-            <label class="form-check-label" for="simulateFailure">
-                Simulate a failure after moving employees, before deleting the source (demonstrates rollback)
-            </label>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Merge</button>
-        <a class="btn btn-secondary" href="departments">Cancel</a>
-    </EditForm>
+    </div>
 }
 
 @code {

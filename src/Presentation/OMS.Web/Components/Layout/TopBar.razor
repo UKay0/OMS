@@ -1,8 +1,8 @@
 @* Top navbar for authenticated pages: app icon/name far left, user avatar circle +
    dropdown (Account Settings / Logout) far right, per the required nav layout. *@
-<nav class="navbar navbar-dark bg-dark topbar px-3">
+<nav class="navbar navbar-dark topbar px-3">
     <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-        <span class="app-icon">OM</span>
+        <span class="app-icon"><i class="bi bi-kanban-fill"></i></span>
         <span>OMS</span>
     </a>
 
@@ -14,12 +14,12 @@
         </button>
         <ul class="dropdown-menu dropdown-menu-end">
             <li><h6 class="dropdown-header">@DisplayName (@Role)</h6></li>
-            <li><a class="dropdown-item" href="/account">Account Settings</a></li>
+            <li><a class="dropdown-item" href="/account"><i class="bi bi-gear-fill me-2"></i>Account Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
             <li>
                 <form method="post" action="/logout">
                     <AntiforgeryToken />
-                    <button type="submit" class="dropdown-item">Logout</button>
+                    <button type="submit" class="dropdown-item"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
                 </form>
             </li>
         </ul>

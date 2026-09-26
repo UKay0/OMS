@@ -3,8 +3,8 @@ using OMS.Domain.Common;
 namespace OMS.Domain.Entities;
 
 /// <summary>
-/// Sample feature entity #1. Demonstrates the "edit via modal" CRUD pattern
-/// (see Web/Components/Pages/Employees/EmployeeList.razor).
+/// A person who works at the organization. Added/edited via a modal on the Employees
+/// page (see Web/Components/Pages/Employees/EmployeeList.razor).
 /// </summary>
 public class Employee : BaseEntity
 {

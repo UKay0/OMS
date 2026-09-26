@@ -1,12 +1,35 @@
+/* ===== Color palette & typography =====
+   Overriding Bootstrap's own CSS custom properties (rather than fighting its
+   compiled utility classes) is what lets btn-primary, links, focus rings, etc. all
+   pick up the brand color for free. */
+:root {
+    --oms-primary: #4f46e5;
+    --oms-primary-rgb: 79, 70, 229;
+    --oms-primary-hover: #4338ca;
+    --oms-primary-hover-rgb: 67, 56, 202;
+    --oms-body-bg: #f4f5f9;
+    --oms-sidebar-bg: #ffffff;
+    --oms-sidebar-border: #e5e7eb;
+    --oms-sidebar-active-bg: rgba(79, 70, 229, 0.08);
+    --oms-topbar-from: #111827;
+    --oms-topbar-to: #1e293b;
+
+    --bs-body-font-family: 'Inter', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --bs-primary: var(--oms-primary);
+    --bs-primary-rgb: var(--oms-primary-rgb);
+    --bs-link-color: var(--oms-primary);
+    --bs-link-color-rgb: var(--oms-primary-rgb);
+    --bs-link-hover-color: var(--oms-primary-hover);
+    --bs-link-hover-color-rgb: var(--oms-primary-hover-rgb);
+}
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     height: 100%;
+    background-color: var(--oms-body-bg);
 }
 
 /* ===== App shell layout (MainLayout) =====
-   Top bar fixed height, left sidebar fixed width, content fills the rest.
-   Any future page just drops into <main class="app-content"> via routing -
-   this shell never needs to change. */
+   Top bar fixed height, left sidebar fixed width, content fills the rest. */
 .app-shell {
     display: flex;
     flex-direction: column;
@@ -14,23 +37,31 @@ html, body {
 }
 
 .topbar {
-    height: 56px;
+    height: 60px;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
+    background: linear-gradient(135deg, var(--oms-topbar-from), var(--oms-topbar-to));
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+.topbar .navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
 .topbar .app-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    background: #1b6ec2;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: var(--oms-primary);
     color: #fff;
-    font-weight: 700;
-    font-size: 0.75rem;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 6px rgba(var(--oms-primary-rgb), 0.5);
 }
 
 .topbar .user-avatar {
@@ -40,7 +71,7 @@ html, body {
     width: 32px;
     height: 32px;
     border-radius: 50%;
-    background: #495057;
+    background: var(--oms-primary);
     color: #fff;
     font-weight: 600;
     font-size: 0.8rem;
@@ -53,41 +84,71 @@ html, body {
 }
 
 .app-sidebar {
-    flex: 0 0 220px;
-    background: #f8f9fa;
-    border-right: 1px solid #dee2e6;
+    flex: 0 0 240px;
+    background: var(--oms-sidebar-bg);
+    border-right: 1px solid var(--oms-sidebar-border);
     overflow-y: auto;
 }
 
 .sidebar-nav {
-    padding: 1rem 0;
+    padding: 1rem 0.75rem;
 }
 
 .sidebar-nav .nav-section-title {
-    padding: 0.5rem 1rem 0.25rem;
-    margin-top: 0.5rem;
-    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem 0.25rem;
+    margin-top: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #6c757d;
+    color: #9ca3af;
 }
 
 .sidebar-nav .nav-link {
-    padding: 0.5rem 1rem;
-    color: #212529;
-    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.75rem;
+    margin-bottom: 0.15rem;
+    border-radius: 8px;
+    color: #374151;
+    font-size: 0.925rem;
+    transition: background-color 0.12s ease, color 0.12s ease;
+}
+
+.sidebar-nav .nav-link i {
+    font-size: 1rem;
+    width: 1.1rem;
+    text-align: center;
+    color: #9ca3af;
+    transition: color 0.12s ease;
+}
+
+.sidebar-nav .nav-link:hover {
+    background: #f3f4f6;
+    color: #111827;
 }
 
 .sidebar-nav .nav-link.active {
-    background: #e9ecef;
-    border-left-color: #1b6ec2;
+    background: var(--oms-sidebar-active-bg);
+    color: var(--oms-primary);
     font-weight: 600;
+}
+
+.sidebar-nav .nav-link.active i {
+    color: var(--oms-primary);
 }
 
 .app-content {
     flex: 1 1 auto;
-    padding: 1.5rem;
+    padding: 1.75rem 2rem;
     overflow-y: auto;
+}
+
+.app-content h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #111827;
 }
 
 /* Minimal layout for Login + the anonymous Welcome page: no navbar/sidebar. */
@@ -96,22 +157,75 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #f8f9fa;
+    background: linear-gradient(135deg, var(--oms-topbar-from), var(--oms-topbar-to));
     padding: 1rem;
 }
 
-a, .btn-link {
-    color: #006bb7;
+.empty-layout .card {
+    border: none;
+    border-radius: 12px;
+}
+
+/* ===== Cards & tables ===== */
+.card {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+}
+
+.table thead th {
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    border-bottom-width: 1px;
+}
+
+.badge {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.stat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+/* ===== Buttons ===== */
+.btn {
+    font-weight: 500;
+    border-radius: 8px;
+}
+
+.btn i {
+    margin-right: 0.35rem;
+}
+
+.btn-sm i {
+    margin-right: 0.25rem;
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    border-color: var(--oms-primary);
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--oms-primary-hover);
+    border-color: var(--oms-primary-hover);
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus, .form-select:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(var(--oms-primary-rgb), 0.5);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--oms-primary);
 }
 
 .content {
